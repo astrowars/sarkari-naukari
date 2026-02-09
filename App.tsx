@@ -31,15 +31,27 @@ function App() {
   const [hideVeryHigh, setHideVeryHigh] = useState(false);
   const [isSmartMode, setIsSmartMode] = useState(false);
 
+  // Improved Route Detection
   useEffect(() => {
-    const path = window.location.pathname;
-    const hash = window.location.hash;
-    if (path === '/sarkar-admin-secret' || hash === '#admin') {
-      setIsAdminRoute(true);
-      document.title = "Admin Panel - Sarkar Ki Naukari";
-    } else {
-      document.title = "Sarkar Ki Naukari - Smart Job Finder";
-    }
+    const checkRoute = () => {
+      const path = window.location.pathname;
+      const hash = window.location.hash;
+      if (path === '/sarkar-admin-secret' || hash === '#admin') {
+        setIsAdminRoute(true);
+        document.title = "Admin Panel - Sarkar Ki Naukari";
+      } else {
+        setIsAdminRoute(false);
+        document.title = "Sarkar Ki Naukari - Smart Job Finder";
+      }
+    };
+
+    checkRoute();
+    window.addEventListener('popstate', checkRoute);
+    window.addEventListener('hashchange', checkRoute);
+    return () => {
+      window.removeEventListener('popstate', checkRoute);
+      window.removeEventListener('hashchange', checkRoute);
+    };
   }, []);
 
   useEffect(() => {
@@ -214,6 +226,7 @@ function App() {
       case 'Defence': return <Shield size={14} />;
       case 'Teaching': return <GraduationCap size={14} />;
       case 'State Govt': return <MapPin size={14} />;
+      case 'UPSC': return <Briefcase size={14} />;
       default: return <Briefcase size={14} />;
     }
   };
