@@ -455,7 +455,6 @@ function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {displayedJobs.length > 0 ? (
                     displayedJobs.map(job => (
-                      /* Fixed: Changed activeJobId to selectedJobId as activeJobId was undefined */
                       <JobCard key={job.id} job={job} userProfile={userProfile} onSetAlert={handleOpenAlerts} isBookmarked={savedJobIds.includes(job.id)} onToggleBookmark={toggleBookmark} text={t} isActive={selectedJobId === job.id} onViewDetails={() => handleViewJob(job.id)} />
                     ))
                   ) : (
