@@ -1,7 +1,9 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { UserProfile, Qualification, Category, Gender } from '../types';
 import { STATES, STREAMS } from '../constants';
-import { User, Calendar, GraduationCap, BookOpen, Users, MapPin, Search, RotateCcw, AlertCircle } from 'lucide-react';
+// Added Shield to the imports from lucide-react to fix the "Cannot find name 'Shield'" error
+import { User, Calendar, GraduationCap, BookOpen, Users, MapPin, Search, RotateCcw, AlertCircle, Info, Shield } from 'lucide-react';
 
 interface FilterFormProps {
   profile: UserProfile;
@@ -13,6 +15,8 @@ interface FilterFormProps {
 }
 
 const FilterForm: React.FC<FilterFormProps> = ({ profile, onChange, onSubmit, onReset, text, errors = {} as Partial<Record<keyof UserProfile, string>> }) => {
+  const [showCategoryInfo, setShowCategoryInfo] = useState(false);
+
   return (
     <div className="bg-white p-5 md:p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 relative overflow-visible">
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-t-3xl"></div>
@@ -108,8 +112,43 @@ const FilterForm: React.FC<FilterFormProps> = ({ profile, onChange, onSubmit, on
             </div>
         </div>
 
-        <div className="group">
-            <label className="block text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 md:mb-2">{text.category} <span className="text-red-500 font-bold">*</span></label>
+        <div className="group relative">
+            <div className="flex items-center justify-between mb-1.5 md:mb-2">
+              <label className="block text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest">{text.category} <span className="text-red-500 font-bold">*</span></label>
+              <button 
+                type="button"
+                onMouseEnter={() => setShowCategoryInfo(true)}
+                onMouseLeave={() => setShowCategoryInfo(false)}
+                onClick={() => setShowCategoryInfo(!showCategoryInfo)}
+                className="text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-1"
+              >
+                <Info size={14} className={showCategoryInfo ? 'text-blue-600' : ''} />
+              </button>
+            </div>
+            
+            {showCategoryInfo && (
+              <div className="absolute bottom-full right-0 mb-3 w-56 p-4 bg-slate-900 text-white rounded-2xl text-[10px] font-medium shadow-2xl shadow-blue-500/20 z-[60] border border-blue-500/30 animate-in fade-in zoom-in-95 duration-200">
+                <div className="absolute bottom-0 right-3 translate-y-1/2 rotate-45 w-3 h-3 bg-slate-900 border-r border-b border-blue-500/30"></div>
+                <p className="font-black text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                  <Shield size={12} fill="currentColor" className="opacity-50" /> Age Relaxation
+                </p>
+                <ul className="space-y-2 relative z-10">
+                  <li className="flex justify-between items-center bg-white/5 p-1.5 rounded-lg">
+                    <span className="text-slate-300">OBC candidates</span>
+                    <span className="text-emerald-400 font-black">+3 Yrs</span>
+                  </li>
+                  <li className="flex justify-between items-center bg-white/5 p-1.5 rounded-lg">
+                    <span className="text-slate-300">SC/ST candidates</span>
+                    <span className="text-emerald-400 font-black">+5 Yrs</span>
+                  </li>
+                  <li className="flex justify-between items-center p-1.5 opacity-60">
+                    <span className="text-slate-400 italic">General Category</span>
+                    <span className="font-bold">None</span>
+                  </li>
+                </ul>
+              </div>
+            )}
+
             <div className="relative">
                 <div className={`absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 transition-colors ${errors.category ? 'text-red-500' : 'text-slate-400 group-focus-within:text-blue-500'}`}>
                     <Users size={18} />
