@@ -1,8 +1,6 @@
-
 import React, { useState } from 'react';
 import { UserProfile, Qualification, Category, Gender } from '../types';
 import { STATES, STREAMS } from '../constants';
-// Added Shield to the imports from lucide-react to fix the "Cannot find name 'Shield'" error
 import { User, Calendar, GraduationCap, BookOpen, Users, MapPin, Search, RotateCcw, AlertCircle, Info, Shield } from 'lucide-react';
 
 interface FilterFormProps {
@@ -18,23 +16,25 @@ const FilterForm: React.FC<FilterFormProps> = ({ profile, onChange, onSubmit, on
   const [showCategoryInfo, setShowCategoryInfo] = useState(false);
 
   return (
-    <div className="bg-white p-5 md:p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 relative overflow-visible">
-      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-t-3xl"></div>
+    <div className="bg-white p-5 md:p-10 rounded-[2.5rem] shadow-2xl shadow-slate-200/60 border border-slate-100 relative overflow-visible">
+      {/* Accent border at top */}
+      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-t-[2.5rem]"></div>
       
-      <div className="flex items-center gap-3 mb-6 md:mb-8">
-        <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
-            <User size={18} className="md:size-5" />
+      <div className="flex items-center gap-4 mb-10">
+        <div className="w-12 h-12 bg-[#eff6ff] rounded-full flex items-center justify-center text-blue-600 shadow-sm">
+            <User size={24} />
         </div>
-        <h2 className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">{text.enterDetails}</h2>
+        <h2 className="text-2xl font-[900] text-slate-900 tracking-tight">{text.enterDetails}</h2>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+      <div className="space-y-6">
         
+        {/* Age */}
         <div className="group">
-            <label className="block text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 md:mb-2">{text.age} <span className="text-red-500 font-bold">*</span></label>
+            <label className="block text-[10px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5">{text.age} <span className="text-rose-500 font-bold">*</span></label>
             <div className="relative">
-                <div className={`absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 transition-colors ${errors.age ? 'text-red-500' : 'text-slate-400 group-focus-within:text-blue-500'}`}>
-                    <Calendar size={18} />
+                <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${errors.age ? 'text-rose-500' : 'text-slate-400 group-focus-within:text-blue-500'}`}>
+                    <Calendar size={20} />
                 </div>
                 <input 
                     type="number" 
@@ -45,33 +45,34 @@ const FilterForm: React.FC<FilterFormProps> = ({ profile, onChange, onSubmit, on
                     }}
                     placeholder="e.g. 24"
                     required
-                    className={`w-full pl-10 md:pl-11 pr-4 py-3 md:py-3.5 bg-slate-50 rounded-xl border outline-none transition-all font-bold text-slate-800 text-sm md:text-base
+                    className={`w-full pl-12 pr-4 py-3.5 bg-[#f8faff] rounded-xl border outline-none transition-all font-bold text-slate-800 text-sm md:text-base
                         ${errors.age 
-                            ? 'border-red-500 ring-2 ring-red-500/10 focus:border-red-500 bg-red-50' 
-                            : 'border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500'
+                            ? 'border-rose-500 ring-2 ring-rose-500/10 focus:border-rose-500 bg-rose-50' 
+                            : 'border-slate-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500'
                         }`}
                 />
             </div>
             {errors.age && (
-                <div className="flex items-center gap-1 mt-1 text-red-600 text-[10px] md:text-xs font-bold">
+                <div className="flex items-center gap-1 mt-1.5 text-rose-600 text-[10px] font-bold">
                     <AlertCircle size={12} /> {errors.age}
                 </div>
             )}
         </div>
 
+        {/* Qualification */}
         <div className="group">
-            <label className="block text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 md:mb-2">{text.qual} <span className="text-red-500 font-bold">*</span></label>
+            <label className="block text-[10px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5">{text.qual} <span className="text-rose-500 font-bold">*</span></label>
             <div className="relative">
-                <div className={`absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 transition-colors ${errors.qualification ? 'text-red-500' : 'text-slate-400 group-focus-within:text-blue-500'}`}>
-                    <GraduationCap size={18} />
+                <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${errors.qualification ? 'text-rose-500' : 'text-slate-400 group-focus-within:text-blue-500'}`}>
+                    <GraduationCap size={20} />
                 </div>
                 <select 
                     value={profile.qualification}
                     onChange={(e) => onChange('qualification', e.target.value)}
-                    className={`w-full pl-10 md:pl-11 pr-10 py-3 md:py-3.5 bg-slate-50 rounded-xl border outline-none transition-all appearance-none font-bold text-slate-800 cursor-pointer text-sm md:text-base
+                    className={`w-full pl-12 pr-10 py-3.5 bg-[#f8faff] rounded-xl border outline-none transition-all appearance-none font-bold text-slate-800 cursor-pointer text-sm md:text-base
                         ${errors.qualification 
-                            ? 'border-red-500 ring-2 ring-red-500/10 focus:border-red-500 bg-red-50' 
-                            : 'border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500'
+                            ? 'border-rose-500 ring-2 ring-rose-500/10 focus:border-rose-500 bg-rose-50' 
+                            : 'border-slate-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500'
                         }`}
                 >
                     <option value="">{text.selectQual}</option>
@@ -83,23 +84,19 @@ const FilterForm: React.FC<FilterFormProps> = ({ profile, onChange, onSubmit, on
                     <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
                 </div>
             </div>
-             {errors.qualification && (
-                <div className="flex items-center gap-1 mt-1 text-red-600 text-[10px] md:text-xs font-bold">
-                    <AlertCircle size={12} /> {errors.qualification}
-                </div>
-            )}
         </div>
 
+        {/* Stream */}
         <div className="group">
-            <label className="block text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 md:mb-2">{text.stream}</label>
+            <label className="block text-[10px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5">{text.stream}</label>
             <div className="relative">
-                <div className="absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
-                    <BookOpen size={18} />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                    <BookOpen size={20} />
                 </div>
                 <select 
                     value={profile.stream}
                     onChange={(e) => onChange('stream', e.target.value)}
-                    className="w-full pl-10 md:pl-11 pr-10 py-3 md:py-3.5 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all appearance-none font-bold text-slate-800 cursor-pointer text-sm md:text-base"
+                    className="w-full pl-12 pr-10 py-3.5 bg-[#f8faff] rounded-xl border border-slate-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all appearance-none font-bold text-slate-800 cursor-pointer text-sm md:text-base"
                 >
                     <option value="">{text.selectStream}</option>
                     {STREAMS.map((s) => (
@@ -112,54 +109,24 @@ const FilterForm: React.FC<FilterFormProps> = ({ profile, onChange, onSubmit, on
             </div>
         </div>
 
+        {/* Category */}
         <div className="group relative">
-            <div className="flex items-center justify-between mb-1.5 md:mb-2">
-              <label className="block text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest">{text.category} <span className="text-red-500 font-bold">*</span></label>
-              <button 
-                type="button"
-                onMouseEnter={() => setShowCategoryInfo(true)}
-                onMouseLeave={() => setShowCategoryInfo(false)}
-                onClick={() => setShowCategoryInfo(!showCategoryInfo)}
-                className="text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-1"
-              >
-                <Info size={14} className={showCategoryInfo ? 'text-blue-600' : ''} />
-              </button>
+            <div className="flex items-center justify-between mb-2.5">
+              <label className="block text-[10px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest">{text.category} <span className="text-rose-500 font-bold">*</span></label>
+              <Info size={14} className="text-slate-300" />
             </div>
             
-            {showCategoryInfo && (
-              <div className="absolute bottom-full right-0 mb-3 w-56 p-4 bg-slate-900 text-white rounded-2xl text-[10px] font-medium shadow-2xl shadow-blue-500/20 z-[60] border border-blue-500/30 animate-in fade-in zoom-in-95 duration-200">
-                <div className="absolute bottom-0 right-3 translate-y-1/2 rotate-45 w-3 h-3 bg-slate-900 border-r border-b border-blue-500/30"></div>
-                <p className="font-black text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                  <Shield size={12} fill="currentColor" className="opacity-50" /> Age Relaxation
-                </p>
-                <ul className="space-y-2 relative z-10">
-                  <li className="flex justify-between items-center bg-white/5 p-1.5 rounded-lg">
-                    <span className="text-slate-300">OBC candidates</span>
-                    <span className="text-emerald-400 font-black">+3 Yrs</span>
-                  </li>
-                  <li className="flex justify-between items-center bg-white/5 p-1.5 rounded-lg">
-                    <span className="text-slate-300">SC/ST candidates</span>
-                    <span className="text-emerald-400 font-black">+5 Yrs</span>
-                  </li>
-                  <li className="flex justify-between items-center p-1.5 opacity-60">
-                    <span className="text-slate-400 italic">General Category</span>
-                    <span className="font-bold">None</span>
-                  </li>
-                </ul>
-              </div>
-            )}
-
             <div className="relative">
-                <div className={`absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 transition-colors ${errors.category ? 'text-red-500' : 'text-slate-400 group-focus-within:text-blue-500'}`}>
-                    <Users size={18} />
+                <div className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${errors.category ? 'text-rose-500' : 'text-slate-400 group-focus-within:text-blue-500'}`}>
+                    <Users size={20} />
                 </div>
                 <select 
                     value={profile.category}
                     onChange={(e) => onChange('category', e.target.value)}
-                    className={`w-full pl-10 md:pl-11 pr-10 py-3 md:py-3.5 bg-slate-50 rounded-xl border outline-none transition-all appearance-none font-bold text-slate-800 cursor-pointer text-sm md:text-base
+                    className={`w-full pl-12 pr-10 py-3.5 bg-[#f8faff] rounded-xl border outline-none transition-all appearance-none font-bold text-slate-800 cursor-pointer text-sm md:text-base
                         ${errors.category 
-                            ? 'border-red-500 ring-2 ring-red-500/10 focus:border-red-500 bg-red-50' 
-                            : 'border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500'
+                            ? 'border-rose-500 ring-2 ring-rose-500/10 focus:border-rose-500 bg-rose-50' 
+                            : 'border-slate-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500'
                         }`}
                 >
                     <option value="">{text.selectCat}</option>
@@ -171,68 +138,67 @@ const FilterForm: React.FC<FilterFormProps> = ({ profile, onChange, onSubmit, on
                     <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
                 </div>
             </div>
-             {errors.category && (
-                <div className="flex items-center gap-1 mt-1 text-red-600 text-[10px] md:text-xs font-bold">
-                    <AlertCircle size={12} /> {errors.category}
-                </div>
-            )}
         </div>
 
+        {/* Gender Selection */}
         <div>
-            <label className="block text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 md:mb-2">{text.gender}</label>
-            <div className="flex gap-3 md:gap-4">
+            <label className="block text-[10px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5">{text.gender}</label>
+            <div className="flex gap-4">
                 {[Gender.MALE, Gender.FEMALE].map((g) => (
-                    <label key={g} className={`flex-1 flex items-center justify-center gap-2 cursor-pointer border rounded-xl py-3 md:py-3.5 transition-all ${profile.gender === g ? 'bg-blue-50 border-blue-500 text-blue-700 ring-1 ring-blue-500 shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}`}>
-                        <input 
-                            type="radio" 
-                            name="gender"
-                            checked={profile.gender === g}
-                            onChange={() => onChange('gender', g)}
-                            className="hidden"
-                        />
-                        <span className="font-bold text-sm md:text-base">{g === Gender.MALE ? text.male : text.female}</span>
-                    </label>
+                    <button 
+                        key={g} 
+                        type="button"
+                        onClick={() => onChange('gender', g)}
+                        className={`flex-1 flex items-center justify-center py-4 px-6 rounded-2xl font-black text-base transition-all border-2
+                            ${profile.gender === g 
+                                ? 'bg-[#f0f7ff] border-blue-500 text-blue-600 shadow-md ring-4 ring-blue-500/5' 
+                                : 'bg-white border-slate-100 text-slate-400 hover:border-slate-200'
+                            }`}
+                    >
+                        {g}
+                    </button>
                 ))}
             </div>
         </div>
 
+        {/* State Preference */}
         <div className="group">
-            <label className="block text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 md:mb-2">{text.statePref}</label>
+            <label className="block text-[10px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2.5">{text.statePref}</label>
             <div className="relative">
-                <div className="absolute left-3.5 md:left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
-                    <MapPin size={18} />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                    <MapPin size={20} />
                 </div>
                 <select 
                     value={profile.statePreference}
                     onChange={(e) => onChange('statePreference', e.target.value)}
-                    className="w-full pl-10 md:pl-11 pr-10 py-3 md:py-3.5 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all appearance-none font-bold text-slate-800 cursor-pointer text-sm md:text-base"
+                    className="w-full pl-12 pr-10 py-3.5 bg-[#f8faff] rounded-xl border border-slate-100 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all appearance-none font-bold text-slate-800 cursor-pointer text-sm md:text-base"
                 >
                     <option value="">{text.anywhere}</option>
                     {STATES.map((s) => (
                         <option key={s} value={s}>{s}</option>
                     ))}
                 </select>
-                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
                     <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
                 </div>
             </div>
         </div>
       </div>
 
-      <div className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-3 md:gap-4">
+      <div className="mt-12 flex flex-col gap-4">
         <button 
             onClick={onReset}
-            className="w-full sm:w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black text-sm md:text-lg py-3.5 md:py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+            className="w-full bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#475569] font-[900] text-sm md:text-lg py-5 px-6 rounded-2xl transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
         >
-            <RotateCcw size={18} />
+            <RotateCcw size={20} strokeWidth={3} />
             {text.clearFilters}
         </button>
 
         <button 
             onClick={onSubmit}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black text-sm md:text-lg py-3.5 md:py-4 px-6 rounded-2xl transition-all shadow-xl shadow-blue-500/20 hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-2 group"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-[900] text-sm md:text-lg py-5 px-6 rounded-2xl transition-all shadow-2xl shadow-blue-500/25 hover:scale-[1.01] active:scale-[0.98] flex items-center justify-center gap-3 group"
         >
-            <Search size={20} strokeWidth={2.5} />
+            <Search size={22} strokeWidth={3} />
             {text.checkJobs}
         </button>
       </div>

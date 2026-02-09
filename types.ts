@@ -75,3 +75,35 @@ export interface AlertPreferences {
   deadlineDays: number; // Notification days before deadline
   lastUpdated: number;
 }
+
+// --- Dynamic Site Configuration ---
+
+export interface QuickLink {
+  id: string;
+  text: string;
+  url: string;
+}
+
+export interface SiteConfig {
+  hero: {
+    titlePrefix: string;
+    titleGradient: string;
+    titleSuffix: string;
+    description: string;
+    showFlag: boolean;
+    showLoginPill: boolean;
+    loginPillText: string;
+  };
+  lists: {
+    results: QuickLink[];
+    admitCards: QuickLink[];
+    latestJobs: QuickLink[];
+  };
+  banner: {
+    badgeText: string;
+    title: string;
+    highlight: string;
+    description: string;
+    buttonText: string;
+  };
+}

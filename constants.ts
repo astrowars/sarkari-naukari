@@ -243,7 +243,11 @@ export const TRANSLATIONS = {
     checkEligibilityBtn: "Check Eligibility",
     eligible: "You are Eligible",
     notEligible: "Not Eligible",
-    viewEligibleJobs: "View Eligible Jobs"
+    viewEligibleJobs: "View Eligible Jobs",
+    quickLatest: "Latest Jobs",
+    quickAdmit: "Admit Card",
+    quickResult: "Results",
+    viewQuick: "View"
   },
   hi: {
     appTitle: "सरकारी नौकरी पात्रता जांच",
@@ -309,6 +313,10 @@ export const TRANSLATIONS = {
     checkEligibilityBtn: "पात्रता जांचें",
     eligible: "आप योग्य हैं",
     notEligible: "योग्य नहीं",
-    viewEligibleJobs: "योग्य नौकरियां देखें"
+    viewEligibleJobs: "योग्य नौकरियां देखें",
+    quickLatest: "नवीनतम नौकरियां",
+    quickAdmit: "प्रवेश पत्र",
+    quickResult: "परिणाम",
+    viewQuick: "देखें"
   }
 };
