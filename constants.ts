@@ -1,3 +1,4 @@
+
 import { Job, Qualification, Category, Gender, JobStatus, CompetitionLevel } from './types';
 
 const getFutureDate = (days: number) => {
@@ -21,15 +22,18 @@ export const STREAMS = [
 ];
 
 export const MOCK_JOBS: Job[] = [
+  // Fixed missing properties in Job 1
   {
     id: '1',
     job_name: 'SSC Multi Tasking Staff (MTS)',
+    organization: 'Staff Selection Commission',
     min_age: 18,
     max_age: 25,
     qualification: Qualification.TENTH,
     category: 'All',
     gender: 'All',
     state: 'All India',
+    isCentral: true,
     competition_level: CompetitionLevel.HIGH,
     apply_link: 'https://ssc.gov.in',
     official_website: 'https://ssc.gov.in',
@@ -38,17 +42,24 @@ export const MOCK_JOBS: Job[] = [
     required_streams: ['Any'],
     salary_range: '₹18,000 - ₹22,000 (Level 1)',
     notification_link: '#',
-    syllabus_link: '#'
+    syllabus_link: '#',
+    fees: { general: '100', obc: '100', sc_st: '0' },
+    dates: { start: '2024-01-01', end: getFutureDate(10), exam: '2024-05-15' },
+    shortDescription: 'SSC Multi Tasking (Non-Technical) Staff, and Havildar (CBIC & CBN) Examination.',
+    seo: { metaTitle: 'SSC MTS Recruitment 2024', metaDescription: 'Apply for SSC MTS 2024. Check eligibility, age limit and fees.', slug: 'ssc-mts-2024' }
   },
+  // Fixed missing properties in Job 2
   {
     id: '2',
     job_name: 'SBI Probationary Officer (PO)',
+    organization: 'State Bank of India',
     min_age: 21,
     max_age: 30,
     qualification: Qualification.GRADUATE,
     category: 'All',
     gender: 'All',
     state: 'All India',
+    isCentral: true,
     competition_level: CompetitionLevel.HIGH,
     apply_link: 'https://sbi.co.in/careers',
     official_website: 'https://sbi.co.in',
@@ -57,17 +68,24 @@ export const MOCK_JOBS: Job[] = [
     required_streams: ['Any'],
     salary_range: '₹65,000 - ₹75,000/mo',
     notification_link: '#',
-    syllabus_link: '#'
+    syllabus_link: '#',
+    fees: { general: '750', obc: '750', sc_st: '0' },
+    dates: { start: '2024-02-01', end: getFutureDate(25), exam: '2024-06-20' },
+    shortDescription: 'Recruitment of Probationary Officers in State Bank of India.',
+    seo: { metaTitle: 'SBI PO Recruitment 2024', metaDescription: 'SBI PO 2024 Apply Online. Graduation required.', slug: 'sbi-po-2024' }
   },
+  // Fixed missing properties in Job 3
   {
     id: '3',
     job_name: 'UP Police Constable',
+    organization: 'UPPRPB',
     min_age: 18,
     max_age: 22,
     qualification: Qualification.TWELFTH,
     category: 'All',
     gender: 'All',
     state: 'Uttar Pradesh',
+    isCentral: false,
     competition_level: CompetitionLevel.HIGH,
     apply_link: '#',
     official_website: 'http://uppbpb.gov.in',
@@ -76,17 +94,24 @@ export const MOCK_JOBS: Job[] = [
     required_streams: ['Any'],
     salary_range: '₹21,700 - ₹69,100 (Level 3)',
     notification_link: '#',
-    syllabus_link: '#'
+    syllabus_link: '#',
+    fees: { general: '400', obc: '400', sc_st: '400' },
+    dates: { start: '2024-03-01', end: getFutureDate(5), exam: '2024-07-10' },
+    shortDescription: 'Direct recruitment for the post of Constable Civil Police.',
+    seo: { metaTitle: 'UP Police Constable Vacancy 2024', metaDescription: 'UP Police Constable Recruitment details.', slug: 'up-police-constable-2024' }
   },
+  // Fixed missing properties in Job 4
   {
     id: 'ibps-1',
     job_name: 'IBPS Clerk CRP XIV',
+    organization: 'Institute of Banking Personnel Selection',
     min_age: 20,
     max_age: 28,
     qualification: Qualification.GRADUATE,
     category: 'All',
     gender: 'All',
     state: 'All India',
+    isCentral: true,
     competition_level: CompetitionLevel.MEDIUM,
     apply_link: 'https://ibps.in',
     status: JobStatus.ACTIVE,
@@ -94,17 +119,24 @@ export const MOCK_JOBS: Job[] = [
     required_streams: ['Any'],
     salary_range: '₹28,000 - ₹35,000/mo',
     notification_link: '#',
-    syllabus_link: '#'
+    syllabus_link: '#',
+    fees: { general: '850', obc: '850', sc_st: '175' },
+    dates: { start: '2024-04-01', end: getFutureDate(15), exam: '2024-08-25' },
+    shortDescription: 'Common Recruitment Process for Recruitment of Clerks in Participating Banks.',
+    seo: { metaTitle: 'IBPS Clerk CRP XIV 2024', metaDescription: 'IBPS Clerk Recruitment notification and apply link.', slug: 'ibps-clerk-2024' }
   },
+  // Fixed missing properties in Job 5
   {
     id: 'isro-1',
     job_name: 'ISRO Scientist/Engineer (SC)',
+    organization: 'Indian Space Research Organisation',
     min_age: 18,
     max_age: 30,
     qualification: Qualification.GRADUATE,
     category: 'All',
     gender: 'All',
     state: 'Karnataka',
+    isCentral: true,
     competition_level: CompetitionLevel.LOW,
     apply_link: 'https://isro.gov.in',
     status: JobStatus.ACTIVE,
@@ -112,17 +144,24 @@ export const MOCK_JOBS: Job[] = [
     required_streams: ['Engineering'],
     salary_range: '₹56,100 (Level 10)',
     notification_link: '#',
-    syllabus_link: '#'
+    syllabus_link: '#',
+    fees: { general: '250', obc: '250', sc_st: '0' },
+    dates: { start: '2024-05-01', end: getFutureDate(40), exam: '2024-09-30' },
+    shortDescription: "Recruitment of Scientist/Engineer 'SC' with BE/B.Tech or equivalent degree.",
+    seo: { metaTitle: 'ISRO Scientist Recruitment 2024', metaDescription: 'Join ISRO as a Scientist. Engineering graduates apply now.', slug: 'isro-scientist-2024' }
   },
+  // Fixed missing properties in Job 6
   {
     id: 'dmrc-1',
     job_name: 'DMRC Executive Trainee',
+    organization: 'Delhi Metro Rail Corporation',
     min_age: 21,
     max_age: 28,
     qualification: Qualification.POST_GRADUATE,
     category: 'All',
     gender: 'All',
     state: 'Delhi',
+    isCentral: false,
     competition_level: CompetitionLevel.LOW,
     apply_link: 'https://delhimetrorail.com',
     status: JobStatus.ACTIVE,
@@ -130,17 +169,24 @@ export const MOCK_JOBS: Job[] = [
     required_streams: ['Management', 'Engineering'],
     salary_range: '₹50,000 - ₹1,60,000',
     notification_link: '#',
-    syllabus_link: '#'
+    syllabus_link: '#',
+    fees: { general: '500', obc: '500', sc_st: '250' },
+    dates: { start: '2024-06-01', end: getFutureDate(20), exam: '2024-10-12' },
+    shortDescription: 'Recruitment for Executive and Non-Executive posts in DMRC.',
+    seo: { metaTitle: 'DMRC Executive Trainee 2024', metaDescription: 'Apply for DMRC ET positions. Management and Engineering posts.', slug: 'dmrc-trainee-2024' }
   },
+  // Fixed missing properties in Job 7
   {
     id: 'nabard-1',
     job_name: 'NABARD Grade A Manager',
+    organization: 'NABARD',
     min_age: 21,
     max_age: 30,
     qualification: Qualification.GRADUATE,
     category: 'All',
     gender: 'All',
     state: 'Maharashtra',
+    isCentral: true,
     competition_level: CompetitionLevel.MEDIUM,
     apply_link: 'https://nabard.org',
     status: JobStatus.ACTIVE,
@@ -148,17 +194,24 @@ export const MOCK_JOBS: Job[] = [
     required_streams: ['Commerce', 'Science', 'Arts / Humanities'],
     salary_range: '₹1,00,000+ Gross Pay',
     notification_link: '#',
-    syllabus_link: '#'
+    syllabus_link: '#',
+    fees: { general: '800', obc: '800', sc_st: '150' },
+    dates: { start: '2024-07-01', end: getFutureDate(30), exam: '2024-11-05' },
+    shortDescription: "Recruitment of Officers in Grade 'A' (RDBS).",
+    seo: { metaTitle: 'NABARD Grade A Officer 2024', metaDescription: 'NABARD Manager recruitment details and application.', slug: 'nabard-grade-a-2024' }
   },
+  // Fixed missing properties in Job 8
   {
     id: 'upsc-1',
     job_name: 'UPSC Civil Services (IAS/IPS)',
+    organization: 'Union Public Service Commission',
     min_age: 21,
     max_age: 32,
     qualification: Qualification.GRADUATE,
     category: 'All',
     gender: 'All',
     state: 'All India',
+    isCentral: true,
     competition_level: CompetitionLevel.HIGH,
     apply_link: 'https://upsc.gov.in',
     status: JobStatus.ACTIVE,
@@ -166,7 +219,11 @@ export const MOCK_JOBS: Job[] = [
     required_streams: ['Any'],
     salary_range: '₹56,100 - ₹2,50,000',
     notification_link: '#',
-    syllabus_link: '#'
+    syllabus_link: '#',
+    fees: { general: '100', obc: '100', sc_st: '0' },
+    dates: { start: '2024-08-01', end: getFutureDate(120), exam: '2025-05-25' },
+    shortDescription: 'Civil Services (Preliminary) Examination for IAS/IPS and other services.',
+    seo: { metaTitle: 'UPSC Civil Services 2024', metaDescription: 'UPSC IAS/IPS exam notification and eligibility.', slug: 'upsc-cse-2024' }
   }
 ];
 

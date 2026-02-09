@@ -18,7 +18,8 @@ import {
   Landmark,
   Train,
   GraduationCap,
-  Briefcase
+  Briefcase,
+  Eye
 } from 'lucide-react';
 
 interface JobCardProps {
@@ -29,9 +30,10 @@ interface JobCardProps {
   onToggleBookmark: (id: string) => void;
   text: any;
   isActive?: boolean;
+  onViewDetails: () => void;
 }
 
-const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookmarked, onToggleBookmark, text, isActive = false }) => {
+const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookmarked, onToggleBookmark, text, isActive = false, onViewDetails }) => {
   const [shareToast, setShareToast] = useState(false);
   const [showSavedConfirm, setShowSavedConfirm] = useState(false);
   const [showAgeDetail, setShowAgeDetail] = useState(false);
@@ -60,9 +62,10 @@ const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookm
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     const shareText = `Govt Job Alert: ${job.job_name}\nLocation: ${job.state}\nEligibility: ${job.qualification}\nApply by: ${job.deadline}`;
-    const shareUrl = window.location.origin;
+    const shareUrl = `${window.location.origin}/#job/${job.id}`;
 
     if (navigator.share) {
       try {
@@ -109,8 +112,8 @@ const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookm
 
   return (
     <div 
-      data-job-id={job.id}
-      className={`group relative flex flex-col bg-white rounded-[2.5rem] p-6 md:p-8 transition-all duration-500 border
+      onClick={onViewDetails}
+      className={`group relative flex flex-col bg-white rounded-[2.5rem] p-6 md:p-8 transition-all duration-500 border cursor-pointer
         ${isActive 
           ? 'border-blue-500 shadow-[0_0_30px_-5px_rgba(59,130,246,0.5)] ring-2 ring-blue-500/10 scale-[1.02]' 
           : 'border-slate-200 shadow-sm hover:border-blue-400 hover:shadow-[0_0_25px_-5px_rgba(59,130,246,0.3)] hover:scale-[1.01]'
@@ -133,7 +136,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookm
       {/* Header Section */}
       <div className="flex justify-between items-start gap-4 mb-4">
         <div className="flex-1">
-          <h3 className={`text-xl md:text-2xl font-black leading-tight transition-colors ${isActive ? 'text-blue-600' : 'text-blue-900'}`}>
+          <h3 className={`text-xl md:text-2xl font-black leading-tight transition-colors group-hover:text-blue-600 ${isActive ? 'text-blue-600' : 'text-blue-900'}`}>
             {job.job_name}
           </h3>
           <div className="flex items-center gap-1.5 mt-2 text-slate-400">
@@ -172,9 +175,10 @@ const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookm
               ? 'bg-emerald-50/50 border-emerald-100' 
               : 'bg-[#f8faff] border-blue-50'
           }`}
-          onMouseEnter={() => setShowAgeDetail(true)}
-          onMouseLeave={() => setShowAgeDetail(false)}
-          onClick={() => setShowAgeDetail(!showAgeDetail)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowAgeDetail(!showAgeDetail);
+          }}
         >
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1">
@@ -188,33 +192,14 @@ const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookm
           <p className="font-black text-slate-800 text-base md:text-lg">
             {job.min_age} - {relaxedMaxAge} <span className="text-xs text-slate-400">Yrs</span>
           </p>
-          {eligibleViaRelaxation && (
-            <p className="text-[9px] font-bold text-emerald-600 flex items-center gap-1 mt-1">
-              <CheckCircle2 size={10} /> {userProfile.category} Bonus Applied
-            </p>
-          )}
 
-          {/* Enhanced Tooltip Explanation */}
           {showAgeDetail && (
-            <div className="absolute bottom-full left-0 mb-4 w-60 p-5 bg-slate-900 text-white rounded-[1.5rem] text-[10px] leading-relaxed shadow-2xl shadow-blue-500/20 z-50 border border-blue-500/30 animate-in fade-in zoom-in-95 duration-200">
-              <div className="absolute bottom-0 left-6 translate-y-1/2 rotate-45 w-3 h-3 bg-slate-900 border-r border-b border-blue-500/30"></div>
-              <div className="font-black mb-3 uppercase tracking-wider text-blue-400 border-b border-slate-700 pb-2 flex items-center gap-2">
-                <Shield size={14} className="opacity-50" /> Age Breakdown
-              </div>
-              <div className="space-y-2.5">
-                <div className="flex justify-between items-center opacity-70">
-                  <span className="text-slate-400">Base Max Age</span>
-                  <span className="font-bold">{job.max_age}</span>
-                </div>
-                <div className="flex justify-between items-center bg-blue-500/10 p-2 rounded-lg border border-blue-500/20">
-                  <span className="text-blue-300 font-bold">Category Bonus</span>
-                  <span className="font-black text-emerald-400">+{relaxationBonus} Yrs</span>
-                </div>
-                <div className="flex justify-between items-center border-t border-slate-700 pt-3 mt-1">
-                  <span className="font-black text-slate-400 uppercase tracking-tighter">Your Max Limit</span>
-                  <span className="font-black text-base text-blue-400">{relaxedMaxAge}</span>
-                </div>
-                <p className="text-[8px] text-slate-500 mt-2 italic text-center">Government norms: OBC +3, SC/ST +5</p>
+            <div className="absolute bottom-full left-0 mb-4 w-60 p-5 bg-slate-900 text-white rounded-[1.5rem] text-[10px] leading-relaxed shadow-2xl z-50 border border-blue-500/30">
+              <div className="font-black mb-3 uppercase tracking-wider text-blue-400 border-b border-slate-700 pb-2">Age Details</div>
+              <div className="space-y-1">
+                <p>Standard Max: {job.max_age}</p>
+                <p className="text-emerald-400">Relaxation: +{relaxationBonus} Yrs</p>
+                <p className="pt-2 border-t border-slate-700 font-bold">Total Max: {relaxedMaxAge}</p>
               </div>
             </div>
           )}
@@ -228,62 +213,26 @@ const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookm
         </div>
       </div>
 
-      {/* Deadline Section */}
-      <div className="p-4 rounded-2xl bg-[#f8faff] border border-blue-50 mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-white rounded-xl border border-slate-100 text-slate-400 shadow-sm">
-            <Calendar size={18} />
-          </div>
-          <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Deadline</p>
-            <p className="font-black text-slate-800 text-sm">
-              {new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-full border border-slate-100 shadow-sm text-blue-600 text-[10px] font-black uppercase">
-          <Clock size={12} /> {daysLeft} Days Left
-        </div>
-      </div>
-
-      {/* Action Buttons Group */}
-      <div className="space-y-3 mb-6">
+      {/* Action Section */}
+      <div className="mt-auto flex gap-3 pt-4 border-t border-slate-50">
         <button 
-          onClick={() => window.open(job.notification_link || '#', '_blank')}
-          className="w-full py-3 bg-[#eff6ff] text-blue-700 font-black text-xs rounded-full border border-blue-100 flex items-center justify-center gap-2 hover:bg-blue-100 transition-colors"
+          onClick={(e) => { e.stopPropagation(); onSetAlert(job); }}
+          className="w-12 h-12 shrink-0 bg-white border border-slate-100 text-slate-400 rounded-xl flex items-center justify-center hover:text-blue-600 hover:border-blue-100 transition-all"
         >
-          <FileText size={16} /> Notification
-        </button>
-        <button 
-          onClick={() => window.open(job.syllabus_link || '#', '_blank')}
-          className="w-full py-3 bg-white text-slate-700 font-black text-xs rounded-full border border-slate-100 flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors"
-        >
-          <BookOpen size={16} /> Syllabus
-        </button>
-      </div>
-
-      {/* Card Footer Actions */}
-      <div className="mt-auto flex gap-3">
-        <button 
-          onClick={() => onSetAlert(job)}
-          className="w-14 h-14 shrink-0 bg-white border-2 border-amber-200 text-amber-500 rounded-full flex items-center justify-center active:scale-95 transition-all shadow-sm"
-        >
-          <Bell size={24} strokeWidth={2.5} />
+          <Bell size={20} />
         </button>
         <button 
           onClick={handleShare}
-          className="w-14 h-14 shrink-0 bg-white border-2 border-slate-100 text-slate-400 rounded-full flex items-center justify-center active:scale-95 transition-all shadow-sm"
+          className="w-12 h-12 shrink-0 bg-white border border-slate-100 text-slate-400 rounded-xl flex items-center justify-center hover:text-blue-600 hover:border-blue-100 transition-all"
         >
-          <Share2 size={22} strokeWidth={2} />
+          <Share2 size={20} />
         </button>
-        <a 
-          href={job.apply_link} 
-          target="_blank" 
-          rel="noreferrer" 
-          className="flex-1 h-14 bg-blue-600 text-white font-black rounded-2xl flex items-center justify-center gap-3 text-sm uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:bg-blue-700 hover:translate-y-[-2px] transition-all active:scale-95"
+        <button 
+          onClick={(e) => { e.stopPropagation(); onViewDetails(); }}
+          className="flex-1 bg-slate-900 text-white font-black rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-widest hover:bg-blue-600 transition-all"
         >
-          Apply <ExternalLink size={18} strokeWidth={2.5} />
-        </a>
+          <Eye size={16} /> View Details
+        </button>
       </div>
     </div>
   );

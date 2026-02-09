@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Briefcase, Frown, Bell, Heart, Sparkles, FileText, Landmark, Train, Shield, GraduationCap, MapPin, Zap, CheckCircle2, Clock, ChevronRight, BellRing, Users, ShieldCheck, Trophy, Flame, ExternalLink, Info, ArrowRight } from 'lucide-react';
+import { Briefcase, Frown, Bell, Heart, Sparkles, FileText, Landmark, Train, Shield, GraduationCap, MapPin, Zap, CheckCircle2, Clock, ChevronRight, BellRing, Users, ShieldCheck, Trophy, Flame, ExternalLink, Info, ArrowLeft } from 'lucide-react';
 import { MOCK_JOBS, TRANSLATIONS } from './constants';
 import { UserProfile, Gender, Job, AlertPreferences, JobStatus, CompetitionLevel, Category, SiteConfig, QuickLink } from './types';
 import { checkEligibility, getJobCategory } from './services/jobService';
@@ -8,7 +8,7 @@ import JobCard from './components/JobCard';
 import NotificationModal from './components/NotificationModal';
 import Footer from './components/Footer';
 import AdminPanel from './components/AdminPanel';
-import SmartFilters, { FilterType } from './components/SmartFilters';
+import JobDetail from './components/JobDetail';
 
 const IndianFlag = () => (
   <div className="inline-flex flex-col w-8 h-5 border border-slate-200 rounded-sm overflow-hidden shrink-0 shadow-sm mx-auto">
@@ -59,6 +59,9 @@ const DEFAULT_CONFIG: SiteConfig = {
       { id: 'l3', text: "HSSC Stenographer Online Form 2026", url: "#" },
       { id: 'l4', text: "Railway RRB Group D Online Form 2026", url: "#" },
       { id: 'l5', text: "PNB Apprentices Online Form 2026", url: "#" }
+    ],
+    answerKeys: [
+      { id: 'ak1', text: "SSC CGL 2024 Answer Key Out", url: "#" }
     ]
   },
   banner: {
@@ -67,12 +70,23 @@ const DEFAULT_CONFIG: SiteConfig = {
     highlight: "Free Alerts",
     description: "Get instant alerts for new vacancies, syllabus updates, and deadline reminders.",
     buttonText: "Get Free Alerts"
+  },
+  settings: {
+    siteName: "Sarkar Ki Naukari",
+    primaryColor: "#1e293b",
+    accentColor: "#f97316",
+    footerText: "© 2024 Smart Govt Job Finder. All rights reserved.",
+    telegramLink: "https://t.me/sarkarinaukari",
+    whatsappLink: "https://wa.me/sarkarinaukari",
+    enableNotifications: true
   }
 };
 
+type ViewMode = 'home' | 'job-detail' | 'admin';
+
 function App() {
-  const [isAdminRoute, setIsAdminRoute] = useState(false);
-  const [activeJobId, setActiveJobId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('home');
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [config, setConfig] = useState<SiteConfig>(() => {
     try {
       const saved = localStorage.getItem('sarkar_site_config');
@@ -80,33 +94,31 @@ function App() {
     } catch (e) { return DEFAULT_CONFIG; }
   });
 
-  useEffect(() => {
-    const checkRoute = () => {
-      const path = window.location.pathname;
-      const hash = window.location.hash;
-      if (path === '/sarkar-admin-secret' || hash === '#admin') {
-        setIsAdminRoute(true);
-        document.title = "Admin Panel - Sarkar Ki Naukari";
-      } else {
-        setIsAdminRoute(false);
-        document.title = "Sarkar Ki Naukari - Smart Job Finder";
-      }
-    };
-    checkRoute();
-    window.addEventListener('popstate', checkRoute);
-    window.addEventListener('hashchange', checkRoute);
-    return () => {
-      window.removeEventListener('popstate', checkRoute);
-      window.removeEventListener('hashchange', checkRoute);
-    };
-  }, []);
-
   const [allJobs, setAllJobs] = useState<Job[]>(() => {
     try {
       const savedJobs = localStorage.getItem('sarkar_jobs_db');
       return savedJobs ? JSON.parse(savedJobs) : MOCK_JOBS;
     } catch (e) { return MOCK_JOBS; }
   });
+
+  useEffect(() => {
+    const handleNavigation = () => {
+      const hash = window.location.hash;
+      if (hash === '#admin') {
+        setViewMode('admin');
+      } else if (hash.startsWith('#job/')) {
+        const id = hash.replace('#job/', '');
+        setSelectedJobId(id);
+        setViewMode('job-detail');
+      } else {
+        setViewMode('home');
+      }
+    };
+
+    handleNavigation();
+    window.addEventListener('hashchange', handleNavigation);
+    return () => window.removeEventListener('hashchange', handleNavigation);
+  }, []);
 
   const handleUpdateJobs = (updatedJobs: Job[]) => {
     setAllJobs(updatedJobs);
@@ -141,7 +153,7 @@ function App() {
 
   const [hasSearched, setHasSearched] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJobForAlert, setSelectedJobForAlert] = useState<Job | null>(null);
   const [savedJobIds, setSavedJobIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('savedJobs');
@@ -193,17 +205,22 @@ function App() {
   const handleReset = () => {
     setUserProfile({ age: '', qualification: '', stream: '', category: '', gender: Gender.MALE, statePreference: '' });
     setFormErrors({}); setHasSearched(false); setViewSavedOnly(false); setSelectedJobCategory('All');
+    window.location.hash = '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleOpenAlerts = (job?: Job) => {
-    setSelectedJob(job || null);
+    setSelectedJobForAlert(job || null);
     setIsModalOpen(true);
   };
 
   const handleSavePreferences = (prefs: AlertPreferences) => {
     setAlertPreferences(prefs);
     try { localStorage.setItem('alertPreferences', JSON.stringify(prefs)); } catch (e) {}
+  };
+
+  const handleViewJob = (id: string) => {
+    window.location.hash = `#job/${id}`;
   };
 
   const eligibleJobs = useMemo(() => {
@@ -219,7 +236,11 @@ function App() {
 
   const displayedJobs = hasSearched || viewSavedOnly ? eligibleJobs : [];
 
-  if (isAdminRoute) return <AdminPanel jobs={allJobs} onUpdateJobs={handleUpdateJobs} siteConfig={config} onUpdateConfig={handleUpdateConfig} />;
+  const activeDetailedJob = useMemo(() => {
+    return allJobs.find(j => j.id === selectedJobId);
+  }, [allJobs, selectedJobId]);
+
+  if (viewMode === 'admin') return <AdminPanel jobs={allJobs} onUpdateJobs={handleUpdateJobs} siteConfig={config} onUpdateConfig={handleUpdateConfig} />;
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans antialiased text-slate-900 w-full overflow-x-hidden">
@@ -259,180 +280,200 @@ function App() {
       </header>
 
       <main className="flex-grow">
-        <div className="max-w-6xl mx-auto px-4 py-12 md:py-20">
-          {!viewSavedOnly && (
-            <>
-              {!hasSearched && (
-                <div className="text-center mb-12 animate-in fade-in duration-700">
-                  <div className="flex justify-center items-center gap-3 mb-8">
-                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest shadow-sm">
-                          <Sparkles size={12} className="text-amber-500" /> Trusted Job Tool
-                      </div>
-                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#f0fdf4] rounded-full border border-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest shadow-sm">
-                          <Zap size={12} fill="currentColor" className="text-emerald-500" /> Free Alerts
-                      </div>
-                  </div>
-                  
-                  <h2 className="text-[40px] md:text-[80px] font-[900] text-slate-900 mb-6 tracking-tighter leading-[1] max-w-4xl mx-auto">
-                    {config.hero.titlePrefix} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">{config.hero.titleGradient}</span><br />{config.hero.titleSuffix}
-                  </h2>
-                  
-                  {config.hero.showFlag && <div className="mb-10 flex justify-center"><IndianFlag /></div>}
-                  
-                  <div className="max-w-2xl mx-auto mb-16">
-                    <p className="text-slate-600 text-base md:text-xl font-medium leading-relaxed px-4 mb-4 whitespace-pre-line">
-                        {config.hero.description}
-                    </p>
-                    {config.hero.showLoginPill && (
-                      <div className="inline-flex px-4 py-1.5 bg-gradient-to-r from-orange-500 to-fuchsia-600 rounded-full text-white text-[10px] font-black uppercase tracking-widest shadow-sm">
-                          {config.hero.loginPillText}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-              
-              <div className="mb-16">
-                <FilterForm profile={userProfile} onChange={handleProfileChange} onSubmit={handleSearch} onReset={handleReset} text={t} errors={formErrors} />
-              </div>
-
-              {!hasSearched && (
-                <div className="mb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
-                  <div className="flex flex-row overflow-x-auto md:grid md:grid-cols-3 gap-4 md:gap-6 pb-4 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory">
+        {viewMode === 'job-detail' && activeDetailedJob ? (
+          <div className="max-w-4xl mx-auto px-4 py-12 md:py-20 animate-in slide-in-from-right duration-500">
+             <button 
+                onClick={() => window.history.back()}
+                className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 font-black text-xs uppercase tracking-widest mb-8 transition-colors group"
+             >
+                <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Search
+             </button>
+             <JobDetail 
+                job={activeDetailedJob} 
+                userProfile={debouncedUserProfile}
+                onSetAlert={handleOpenAlerts}
+                isBookmarked={savedJobIds.includes(activeDetailedJob.id)}
+                onToggleBookmark={toggleBookmark}
+                text={t}
+             />
+          </div>
+        ) : (
+          <div className="max-w-6xl mx-auto px-4 py-12 md:py-20">
+            {!viewSavedOnly && (
+              <>
+                {!hasSearched && (
+                  <div className="text-center mb-12 animate-in fade-in duration-700">
+                    <div className="flex justify-center items-center gap-3 mb-8">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest shadow-sm">
+                            <Sparkles size={12} className="text-amber-500" /> Trusted Job Tool
+                        </div>
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#f0fdf4] rounded-full border border-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest shadow-sm">
+                            <Zap size={12} fill="currentColor" className="text-emerald-500" /> Free Alerts
+                        </div>
+                    </div>
                     
-                    {/* RESULT BOX */}
-                    <div className="min-w-[280px] md:min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex flex-col h-[520px] snap-start">
-                      <div className="bg-[#6b21a8] p-3 text-center">
-                        <h3 className="text-white font-black text-sm md:text-base uppercase tracking-wider">RESULT</h3>
-                      </div>
-                      <div className="flex-1 overflow-y-auto p-4 md:p-5 scrollbar-hide">
-                        <ul className="space-y-2">
-                          {config.lists.results.map((item) => (
-                            <li key={item.id} className="flex items-start gap-2.5 group">
-                              <span className="text-slate-900 mt-1 shrink-0 text-xs">•</span>
-                              <a href={item.url} className="text-[#2563eb] text-[13px] md:text-[14px] font-medium leading-snug group-hover:underline">
-                                {item.text}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-
-                    {/* ADMIT CARD BOX */}
-                    <div className="min-w-[280px] md:min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex flex-col h-[520px] snap-start">
-                      <div className="bg-[#2563eb] p-3 text-center">
-                        <h3 className="text-white font-black text-sm md:text-base uppercase tracking-wider">ADMIT CARD</h3>
-                      </div>
-                      <div className="flex-1 overflow-y-auto p-4 md:p-5 scrollbar-hide">
-                        <ul className="space-y-2">
-                          {config.lists.admitCards.map((item) => (
-                            <li key={item.id} className="flex items-start gap-2.5 group">
-                              <span className="text-slate-900 mt-1 shrink-0 text-xs">•</span>
-                              <a href={item.url} className="text-[#2563eb] text-[13px] md:text-[14px] font-medium leading-snug group-hover:underline">
-                                {item.text}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-
-                    {/* LATEST JOBS BOX */}
-                    <div className="min-w-[280px] md:min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex flex-col h-[520px] snap-start">
-                      <div className="bg-[#b91c1c] p-3 text-center">
-                        <h3 className="text-white font-black text-sm md:text-base uppercase tracking-wider">LATEST JOBS</h3>
-                      </div>
-                      <div className="flex-1 overflow-y-auto p-4 md:p-5 scrollbar-hide">
-                        <ul className="space-y-2">
-                          {config.lists.latestJobs.map((item) => (
-                            <li key={item.id} className="flex items-start gap-2.5 group">
-                              <span className="text-slate-900 mt-1 shrink-0 text-xs">•</span>
-                              <a href={item.url} className="text-[#2563eb] text-[13px] md:text-[14px] font-medium leading-snug group-hover:underline">
-                                {item.text}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              )}
-
-              {!hasSearched && (
-                <div className="mb-16">
-                  <div className="bg-[#f0f9ff] border border-blue-100 rounded-[2rem] p-8 md:p-12 text-center shadow-sm relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-50 -mr-16 -mt-16"></div>
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-50 -ml-16 -mb-16"></div>
+                    <h2 className="text-[40px] md:text-[80px] font-[900] text-slate-900 mb-6 tracking-tighter leading-[1] max-w-4xl mx-auto">
+                      {config.hero.titlePrefix} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">{config.hero.titleGradient}</span><br />{config.hero.titleSuffix}
+                    </h2>
                     
-                    <div className="relative z-10">
-                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-blue-600 text-[10px] font-black uppercase tracking-widest mb-6 border border-blue-50">
-                        <BellRing size={14} className="animate-bounce" /> {config.banner.badgeText}
-                      </div>
-                      <h3 className="text-3xl md:text-5xl font-black text-slate-900 mb-6">
-                        {config.banner.title} <span className="text-blue-600">{config.banner.highlight}</span>
-                      </h3>
-                      <p className="text-slate-500 text-lg max-w-xl mx-auto mb-10 font-medium">
-                        {config.banner.description}
+                    {config.hero.showFlag && <div className="mb-10 flex justify-center"><IndianFlag /></div>}
+                    
+                    <div className="max-w-2xl mx-auto mb-16">
+                      <p className="text-slate-600 text-base md:text-xl font-medium leading-relaxed px-4 mb-4 whitespace-pre-line">
+                          {config.hero.description}
                       </p>
-                      
-                      <button 
-                        onClick={() => setIsModalOpen(true)}
-                        className="bg-slate-900 text-white font-black px-12 py-5 rounded-2xl shadow-2xl hover:bg-blue-600 transition-all flex items-center justify-center gap-4 mx-auto group/btn"
-                      >
-                        <span className="text-sm uppercase tracking-widest">{config.banner.buttonText}</span>
-                        <Zap size={20} fill="currentColor" className="text-amber-400 group-hover/btn:scale-110 transition-transform" />
-                      </button>
-                      <p className="text-[10px] text-slate-400 mt-4 uppercase font-bold tracking-widest">WhatsApp • Telegram • Email</p>
+                      {config.hero.showLoginPill && (
+                        <div className="inline-flex px-4 py-1.5 bg-gradient-to-r from-orange-500 to-fuchsia-600 rounded-full text-white text-[10px] font-black uppercase tracking-widest shadow-sm">
+                            {config.hero.loginPillText}
+                        </div>
+                      )}
                     </div>
                   </div>
+                )}
+                
+                <div className="mb-16">
+                  <FilterForm profile={userProfile} onChange={handleProfileChange} onSubmit={handleSearch} onReset={handleReset} text={t} errors={formErrors} />
                 </div>
-              )}
-            </>
-          )}
 
-          {(hasSearched || viewSavedOnly) && (
-            <div id="results-section" className="animate-in fade-in duration-500">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                <h3 className="text-2xl md:text-3xl font-black text-slate-900 flex items-center gap-3">
-                  {viewSavedOnly ? (
-                    <><div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center text-white"><Heart size={20} fill="white" /></div> {t.yourSaved}</>
-                  ) : (
-                    <><div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white"><Sparkles size={20} fill="white" /></div> {displayedJobs.length} {t.eligibleJobs}</>
+                {!hasSearched && (
+                  <div className="mb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                    <div className="flex flex-row overflow-x-auto md:grid md:grid-cols-3 gap-4 md:gap-6 pb-4 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory">
+                      
+                      {/* RESULT BOX */}
+                      <div className="min-w-[280px] md:min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex flex-col h-[520px] snap-start">
+                        <div className="bg-[#6b21a8] p-3 text-center">
+                          <h3 className="text-white font-black text-sm md:text-base uppercase tracking-wider">RESULT</h3>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 md:p-5 scrollbar-hide">
+                          <ul className="space-y-2">
+                            {config.lists.results.map((item) => (
+                              <li key={item.id} className="flex items-start gap-2.5 group">
+                                <span className="text-slate-900 mt-1 shrink-0 text-xs">•</span>
+                                <a href={item.url} className="text-[#2563eb] text-[13px] md:text-[14px] font-medium leading-snug group-hover:underline">
+                                  {item.text}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+
+                      {/* ADMIT CARD BOX */}
+                      <div className="min-w-[280px] md:min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex flex-col h-[520px] snap-start">
+                        <div className="bg-[#2563eb] p-3 text-center">
+                          <h3 className="text-white font-black text-sm md:text-base uppercase tracking-wider">ADMIT CARD</h3>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 md:p-5 scrollbar-hide">
+                          <ul className="space-y-2">
+                            {config.lists.admitCards.map((item) => (
+                              <li key={item.id} className="flex items-start gap-2.5 group">
+                                <span className="text-slate-900 mt-1 shrink-0 text-xs">•</span>
+                                <a href={item.url} className="text-[#2563eb] text-[13px] md:text-[14px] font-medium leading-snug group-hover:underline">
+                                  {item.text}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+
+                      {/* LATEST JOBS BOX */}
+                      <div className="min-w-[280px] md:min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex flex-col h-[520px] snap-start">
+                        <div className="bg-[#b91c1c] p-3 text-center">
+                          <h3 className="text-white font-black text-sm md:text-base uppercase tracking-wider">LATEST JOBS</h3>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 md:p-5 scrollbar-hide">
+                          <ul className="space-y-2">
+                            {config.lists.latestJobs.map((item) => (
+                              <li key={item.id} className="flex items-start gap-2.5 group">
+                                <span className="text-slate-900 mt-1 shrink-0 text-xs">•</span>
+                                <a href={item.url} className="text-[#2563eb] text-[13px] md:text-[14px] font-medium leading-snug group-hover:underline">
+                                  {item.text}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                )}
+
+                {!hasSearched && (
+                  <div className="mb-16">
+                    <div className="bg-[#f0f9ff] border border-blue-100 rounded-[2rem] p-8 md:p-12 text-center shadow-sm relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-50 -mr-16 -mt-16"></div>
+                      <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-50 -ml-16 -mb-16"></div>
+                      
+                      <div className="relative z-10">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-blue-600 text-[10px] font-black uppercase tracking-widest mb-6 border border-blue-50">
+                          <BellRing size={14} className="animate-bounce" /> {config.banner.badgeText}
+                        </div>
+                        <h3 className="text-3xl md:text-5xl font-black text-slate-900 mb-6">
+                          {config.banner.title} <span className="text-blue-600">{config.banner.highlight}</span>
+                        </h3>
+                        <p className="text-slate-500 text-lg max-w-xl mx-auto mb-10 font-medium">
+                          {config.banner.description}
+                        </p>
+                        
+                        <button 
+                          onClick={() => setIsModalOpen(true)}
+                          className="bg-slate-900 text-white font-black px-12 py-5 rounded-2xl shadow-2xl hover:bg-blue-600 transition-all flex items-center justify-center gap-4 mx-auto group/btn"
+                        >
+                          <span className="text-sm uppercase tracking-widest">{config.banner.buttonText}</span>
+                          <Zap size={20} fill="currentColor" className="text-amber-400 group-hover/btn:scale-110 transition-transform" />
+                        </button>
+                        <p className="text-[10px] text-slate-400 mt-4 uppercase font-bold tracking-widest">WhatsApp • Telegram • Email</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {(hasSearched || viewSavedOnly) && (
+              <div id="results-section" className="animate-in fade-in duration-500">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                  <h3 className="text-2xl md:text-3xl font-black text-slate-900 flex items-center gap-3">
+                    {viewSavedOnly ? (
+                      <><div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center text-white"><Heart size={20} fill="white" /></div> {t.yourSaved}</>
+                    ) : (
+                      <><div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white"><Sparkles size={20} fill="white" /></div> {displayedJobs.length} {t.eligibleJobs}</>
+                    )}
+                  </h3>
+                  {!viewSavedOnly && (
+                    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                      {['All', 'SSC', 'Banking', 'Railways', 'Defence', 'Teaching', 'State Govt', 'UPSC'].map(cat => (
+                        <button key={cat} onClick={() => setSelectedJobCategory(cat)} className={`px-4 py-2 rounded-xl text-xs font-bold border whitespace-nowrap transition-all ${selectedJobCategory === cat ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}>
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
                   )}
-                </h3>
-                {!viewSavedOnly && (
-                   <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                    {['All', 'SSC', 'Banking', 'Railways', 'Defence', 'Teaching', 'State Govt', 'UPSC'].map(cat => (
-                      <button key={cat} onClick={() => setSelectedJobCategory(cat)} className={`px-4 py-2 rounded-xl text-xs font-bold border whitespace-nowrap transition-all ${selectedJobCategory === cat ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}>
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {displayedJobs.length > 0 ? (
+                    displayedJobs.map(job => (
+                      /* Fixed: Changed activeJobId to selectedJobId as activeJobId was undefined */
+                      <JobCard key={job.id} job={job} userProfile={userProfile} onSetAlert={handleOpenAlerts} isBookmarked={savedJobIds.includes(job.id)} onToggleBookmark={toggleBookmark} text={t} isActive={selectedJobId === job.id} onViewDetails={() => handleViewJob(job.id)} />
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-20 bg-white border-2 border-dashed border-slate-200 rounded-3xl">
+                      <Frown size={48} className="mx-auto text-slate-300 mb-4" />
+                      <h3 className="text-xl font-bold text-slate-900 mb-2">No matching jobs found</h3>
+                      <button onClick={handleReset} className="mt-4 bg-slate-900 text-white px-8 py-3 rounded-xl font-bold">Reset Filters</button>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {displayedJobs.length > 0 ? (
-                  displayedJobs.map(job => (
-                    <JobCard key={job.id} job={job} userProfile={userProfile} onSetAlert={handleOpenAlerts} isBookmarked={savedJobIds.includes(job.id)} onToggleBookmark={toggleBookmark} text={t} isActive={activeJobId === job.id} />
-                  ))
-                ) : (
-                  <div className="col-span-full text-center py-20 bg-white border-2 border-dashed border-slate-200 rounded-3xl">
-                    <Frown size={48} className="mx-auto text-slate-300 mb-4" />
-                    <h3 className="text-xl font-bold text-slate-900 mb-2">No matching jobs found</h3>
-                    <button onClick={handleReset} className="mt-4 bg-slate-900 text-white px-8 py-3 rounded-xl font-bold">Reset Filters</button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </main>
 
       <Footer text={t} />
-      <NotificationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} profile={userProfile} job={selectedJob} savedPreferences={alertPreferences} onSavePreferences={handleSavePreferences} />
+      <NotificationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} profile={userProfile} job={selectedJobForAlert} savedPreferences={alertPreferences} onSavePreferences={handleSavePreferences} />
     </div>
   );
 }
