@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, FileText, Users, Bell, LogOut, Plus, Edit, Trash2, 
-  Save, X, CheckCircle2, AlertTriangle, Search, Eye, Play, Shield
+  Save, X, CheckCircle2, AlertTriangle, Search, Eye, Play, Shield, Settings, Key, Lock
 } from 'lucide-react';
 import { Job, JobStatus, Qualification, Category, Gender, CompetitionLevel, UserProfile } from '../types';
 import { STREAMS, STATES } from '../constants';
-import { checkEligibility, getRelaxedMaxAge } from '../services/jobService';
+import { checkEligibility, getJobCategory } from '../services/jobService';
 
 interface AdminPanelProps {
   jobs: Job[];
   onUpdateJobs: (jobs: Job[]) => void;
 }
 
-type AdminView = 'dashboard' | 'jobs' | 'users' | 'alerts';
+type AdminView = 'dashboard' | 'jobs' | 'users' | 'alerts' | 'settings';
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ jobs, onUpdateJobs }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -20,6 +20,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ jobs, onUpdateJobs }) => {
   const [password, setPassword] = useState('');
   const [currentView, setCurrentView] = useState<AdminView>('dashboard');
   
+  // Dynamic Credentials State
+  const [adminCreds, setAdminCreds] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sarkar_admin_creds');
+      return saved ? JSON.parse(saved) : { email: 'admin@sarkari.com', password: 'admin123' };
+    } catch (e) {
+      return { email: 'admin@sarkari.com', password: 'admin123' };
+    }
+  });
+
+  // Password Change Form State
+  const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' });
+  const [passwordStatus, setPasswordStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
+
   // Job Editor State
   const [isEditing, setIsEditing] = useState(false);
   const [editingJob, setEditingJob] = useState<Partial<Job>>({});
@@ -47,10 +61,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ jobs, onUpdateJobs }) => {
   // Auth Handler
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // HARDCODED MOCK CREDENTIALS
-    if (email === 'admin@sarkari.com' && password === 'admin123') {
+    if (email === adminCreds.email && password === adminCreds.password) {
       setIsAuthenticated(true);
-      // Prevent body scroll locking issues from other components
       document.body.style.overflow = 'auto';
     } else {
       alert('Invalid credentials');
@@ -60,6 +72,28 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ jobs, onUpdateJobs }) => {
   const handleLogout = () => {
     setIsAuthenticated(false);
     window.location.href = '/';
+  };
+
+  const handleChangePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordForm.current !== adminCreds.password) {
+      setPasswordStatus({ type: 'error', msg: 'Current password is incorrect.' });
+      return;
+    }
+    if (passwordForm.new !== passwordForm.confirm) {
+      setPasswordStatus({ type: 'error', msg: 'New passwords do not match.' });
+      return;
+    }
+    if (passwordForm.new.length < 6) {
+      setPasswordStatus({ type: 'error', msg: 'Password must be at least 6 characters.' });
+      return;
+    }
+
+    const newCreds = { ...adminCreds, password: passwordForm.new };
+    setAdminCreds(newCreds);
+    localStorage.setItem('sarkar_admin_creds', JSON.stringify(newCreds));
+    setPasswordStatus({ type: 'success', msg: 'Password updated successfully!' });
+    setPasswordForm({ current: '', new: '', confirm: '' });
   };
 
   // Job CRUD
@@ -95,7 +129,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ jobs, onUpdateJobs }) => {
 
   const runEligibilityTest = () => {
     if (!editingJob.job_name) return;
-    // Construct a temporary job object from the form state
     const tempJob = { ...editingJob, required_streams: editingJob.required_streams || ['Any'] } as Job;
     const result = checkEligibility(tempJob, testProfile);
     setTestResult(result);
@@ -172,6 +205,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ jobs, onUpdateJobs }) => {
           >
             <Bell size={20} /> Alerts
           </button>
+          <button 
+             onClick={() => setCurrentView('settings')}
+             className={`flex items-center gap-3 w-full p-3 rounded-lg transition-colors ${currentView === 'settings' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}
+          >
+            <Settings size={20} /> Settings
+          </button>
         </nav>
         <div className="p-4 border-t border-slate-800">
           <button onClick={handleLogout} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-medium">
@@ -186,7 +225,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ jobs, onUpdateJobs }) => {
         {/* Mobile Header */}
         <div className="md:hidden flex justify-between items-center mb-6 bg-white p-4 rounded-xl shadow-sm">
              <h2 className="font-black text-slate-900">SarkarAdmin</h2>
-             <button onClick={handleLogout}><LogOut size={20} /></button>
+             <div className="flex gap-4">
+                <button onClick={() => setCurrentView('settings')}><Settings size={20} /></button>
+                <button onClick={handleLogout}><LogOut size={20} /></button>
+             </div>
         </div>
 
         {/* --- VIEW: DASHBOARD --- */}
@@ -214,7 +256,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ jobs, onUpdateJobs }) => {
             
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
               <h3 className="font-bold text-slate-800 mb-4">Quick Actions</h3>
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-4">
                 <button onClick={() => { setCurrentView('jobs'); setIsEditing(true); setEditingJob({}); }} className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-800">
                   <Plus size={16} /> Post New Job
                 </button>
@@ -463,6 +505,90 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ jobs, onUpdateJobs }) => {
                      <Bell size={18} /> Send Broadcast Now
                  </button>
              </div>
+        )}
+
+        {/* --- VIEW: SETTINGS --- */}
+        {currentView === 'settings' && (
+          <div className="animate-in fade-in duration-300">
+            <h1 className="text-2xl font-bold text-slate-800 mb-6">Account Settings</h1>
+            
+            <div className="max-w-2xl bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+              <div className="p-6 border-b border-slate-100 flex items-center gap-3 text-slate-800">
+                <div className="p-2 bg-slate-900 text-white rounded-lg"><Key size={20} /></div>
+                <div>
+                  <h3 className="font-bold">Change Password</h3>
+                  <p className="text-xs text-slate-500">Secure your admin account with a new password.</p>
+                </div>
+              </div>
+              
+              <form onSubmit={handleChangePassword} className="p-6 space-y-4">
+                {passwordStatus && (
+                  <div className={`p-4 rounded-xl text-sm font-bold flex items-center gap-3 ${passwordStatus.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
+                    {passwordStatus.type === 'success' ? <CheckCircle2 size={18} /> : <AlertTriangle size={18} />}
+                    {passwordStatus.msg}
+                  </div>
+                )}
+                
+                <div>
+                  <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5">Current Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input 
+                      type="password"
+                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none font-medium"
+                      value={passwordForm.current}
+                      onChange={e => setPasswordForm({...passwordForm, current: e.target.value})}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <div>
+                    <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5">New Password</label>
+                    <div className="relative">
+                      <Key className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                      <input 
+                        type="password"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none font-medium"
+                        value={passwordForm.new}
+                        onChange={e => setPasswordForm({...passwordForm, new: e.target.value})}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5">Confirm New Password</label>
+                    <div className="relative">
+                      <Key className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                      <input 
+                        type="password"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none font-medium"
+                        value={passwordForm.confirm}
+                        onChange={e => setPasswordForm({...passwordForm, confirm: e.target.value})}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4">
+                  <button type="submit" className="w-full bg-slate-900 text-white font-black py-4 rounded-2xl hover:bg-black transition-all shadow-lg active:scale-95">
+                    Update Password
+                  </button>
+                </div>
+              </form>
+            </div>
+            
+            <div className="mt-8 p-6 bg-amber-50 rounded-2xl border border-amber-100 max-w-2xl">
+              <h4 className="font-bold text-amber-800 flex items-center gap-2 mb-2">
+                <AlertTriangle size={18} /> Warning
+              </h4>
+              <p className="text-sm text-amber-700">
+                Changing your password will update your login credentials locally. Make sure you remember your new password, as there is no "Forgot Password" link in this mock implementation.
+              </p>
+            </div>
+          </div>
         )}
 
       </main>
