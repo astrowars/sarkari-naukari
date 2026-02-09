@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=1280" />
     <title>Sarkar Ki Naukari - Smart Govt Job Finder</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -10,7 +10,8 @@
       body {
         font-family: 'Inter', sans-serif;
         background-color: #f8fafc;
-        overflow-x: hidden;
+        min-width: 1280px;
+        overflow-x: auto;
         -webkit-tap-highlight-color: transparent;
       }
       .scrollbar-hide::-webkit-scrollbar {
@@ -19,11 +20,6 @@
       .scrollbar-hide {
         -ms-overflow-style: none;
         scrollbar-width: none;
-      }
-      /* Prevent bounce on iOS */
-      html, body {
-        height: 100%;
-        width: 100%;
       }
       /* Loading screen styles */
       #app-loader {
@@ -67,10 +63,8 @@
       <p style="margin-top: 16px; font-weight: 800; color: #1e293b; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em;">Smart Job Finder</p>
     </div>
     <div id="root"></div>
-    <!-- Explicit entry point for Vite/Vercel build optimization -->
     <script type="module" src="./index.tsx"></script>
     <script>
-      // Remove loader once React has mounted or started rendering
       window.addEventListener('load', () => {
         setTimeout(() => {
           const loader = document.getElementById('app-loader');

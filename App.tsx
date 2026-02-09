@@ -244,11 +244,11 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans antialiased text-slate-900 w-full overflow-x-hidden">
-      <header className="sticky top-0 z-50 bg-white border-b border-slate-100 px-4">
-        <div className="max-w-6xl mx-auto h-16 md:h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3 md:gap-4 cursor-pointer" onClick={handleReset}>
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-100 px-8">
+        <div className="max-w-6xl mx-auto h-20 flex items-center justify-between">
+          <div className="flex items-center gap-4 cursor-pointer" onClick={handleReset}>
             <div className="relative">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
                     <Briefcase className="w-6 h-6" fill="currentColor" />
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white border-2 border-white rounded-full flex items-center justify-center">
@@ -256,23 +256,23 @@ function App() {
                 </div>
             </div>
             <div className="flex flex-col">
-              <h1 className="font-bold text-blue-600 text-[9px] md:text-[10px] uppercase tracking-[0.2em] leading-none">Sarkar Ki Naukari</h1>
-              <span className="font-extrabold text-slate-900 text-sm md:text-xl">Smart Job Finder</span>
+              <h1 className="font-bold text-blue-600 text-[10px] uppercase tracking-[0.2em] leading-none">Sarkar Ki Naukari</h1>
+              <span className="font-extrabold text-slate-900 text-xl">Smart Job Finder</span>
             </div>
           </div>
           
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-4">
             <div className="flex bg-slate-100 p-1 rounded-2xl">
-              <button onClick={() => setLang('en')} className={`px-4 py-2 rounded-xl text-[10px] md:text-xs font-black transition-all ${lang === 'en' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'}`}>ENG</button>
-              <button onClick={() => setLang('hi')} className={`px-4 py-2 rounded-xl text-[10px] md:text-xs font-black transition-all ${lang === 'hi' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'}`}>हिन्दी</button>
+              <button onClick={() => setLang('en')} className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${lang === 'en' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'}`}>ENG</button>
+              <button onClick={() => setLang('hi')} className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${lang === 'hi' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'}`}>हिन्दी</button>
             </div>
-            <button onClick={() => setViewSavedOnly(!viewSavedOnly)} className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-slate-200 bg-white flex items-center justify-center text-slate-300 relative active:scale-95 transition-all">
+            <button onClick={() => setViewSavedOnly(!viewSavedOnly)} className="w-12 h-12 rounded-full border border-slate-200 bg-white flex items-center justify-center text-slate-300 relative active:scale-95 transition-all">
                 <Heart size={20} fill={viewSavedOnly ? "#ef4444" : "none"} stroke={viewSavedOnly ? "#ef4444" : "currentColor"} />
                 {savedJobIds.length > 0 && !viewSavedOnly && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white">{savedJobIds.length}</span>
                 )}
             </button>
-            <button onClick={() => setIsModalOpen(true)} className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all">
+            <button onClick={() => setIsModalOpen(true)} className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-lg active:scale-95 transition-all">
               <Bell className="w-5 h-5" />
             </button>
           </div>
@@ -281,7 +281,7 @@ function App() {
 
       <main className="flex-grow">
         {viewMode === 'job-detail' && activeDetailedJob ? (
-          <div className="max-w-4xl mx-auto px-4 py-12 md:py-20 animate-in slide-in-from-right duration-500">
+          <div className="max-w-6xl mx-auto px-8 py-20 animate-in slide-in-from-right duration-500">
              <button 
                 onClick={() => window.history.back()}
                 className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 font-black text-xs uppercase tracking-widest mb-8 transition-colors group"
@@ -298,7 +298,7 @@ function App() {
              />
           </div>
         ) : (
-          <div className="max-w-6xl mx-auto px-4 py-12 md:py-20">
+          <div className="max-w-6xl mx-auto px-8 py-20">
             {!viewSavedOnly && (
               <>
                 {!hasSearched && (
@@ -312,14 +312,14 @@ function App() {
                         </div>
                     </div>
                     
-                    <h2 className="text-[40px] md:text-[80px] font-[900] text-slate-900 mb-6 tracking-tighter leading-[1] max-w-4xl mx-auto">
+                    <h2 className="text-[80px] font-[900] text-slate-900 mb-6 tracking-tighter leading-[1] max-w-4xl mx-auto">
                       {config.hero.titlePrefix} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">{config.hero.titleGradient}</span><br />{config.hero.titleSuffix}
                     </h2>
                     
                     {config.hero.showFlag && <div className="mb-10 flex justify-center"><IndianFlag /></div>}
                     
                     <div className="max-w-2xl mx-auto mb-16">
-                      <p className="text-slate-600 text-base md:text-xl font-medium leading-relaxed px-4 mb-4 whitespace-pre-line">
+                      <p className="text-slate-600 text-xl font-medium leading-relaxed px-4 mb-4 whitespace-pre-line">
                           {config.hero.description}
                       </p>
                       {config.hero.showLoginPill && (
@@ -337,19 +337,19 @@ function App() {
 
                 {!hasSearched && (
                   <div className="mb-16 animate-in fade-in slide-in-from-bottom-6 duration-700">
-                    <div className="flex flex-row overflow-x-auto md:grid md:grid-cols-3 gap-4 md:gap-6 pb-4 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory">
+                    <div className="grid grid-cols-3 gap-6">
                       
                       {/* RESULT BOX */}
-                      <div className="min-w-[280px] md:min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex flex-col h-[520px] snap-start">
+                      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex flex-col h-[520px]">
                         <div className="bg-[#6b21a8] p-3 text-center">
-                          <h3 className="text-white font-black text-sm md:text-base uppercase tracking-wider">RESULT</h3>
+                          <h3 className="text-white font-black text-base uppercase tracking-wider">RESULT</h3>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-4 md:p-5 scrollbar-hide">
+                        <div className="flex-1 overflow-y-auto p-5 scrollbar-hide">
                           <ul className="space-y-2">
                             {config.lists.results.map((item) => (
                               <li key={item.id} className="flex items-start gap-2.5 group">
                                 <span className="text-slate-900 mt-1 shrink-0 text-xs">•</span>
-                                <a href={item.url} className="text-[#2563eb] text-[13px] md:text-[14px] font-medium leading-snug group-hover:underline">
+                                <a href={item.url} className="text-[#2563eb] text-[14px] font-medium leading-snug group-hover:underline">
                                   {item.text}
                                 </a>
                               </li>
@@ -359,16 +359,16 @@ function App() {
                       </div>
 
                       {/* ADMIT CARD BOX */}
-                      <div className="min-w-[280px] md:min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex flex-col h-[520px] snap-start">
+                      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex flex-col h-[520px]">
                         <div className="bg-[#2563eb] p-3 text-center">
-                          <h3 className="text-white font-black text-sm md:text-base uppercase tracking-wider">ADMIT CARD</h3>
+                          <h3 className="text-white font-black text-base uppercase tracking-wider">ADMIT CARD</h3>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-4 md:p-5 scrollbar-hide">
+                        <div className="flex-1 overflow-y-auto p-5 scrollbar-hide">
                           <ul className="space-y-2">
                             {config.lists.admitCards.map((item) => (
                               <li key={item.id} className="flex items-start gap-2.5 group">
                                 <span className="text-slate-900 mt-1 shrink-0 text-xs">•</span>
-                                <a href={item.url} className="text-[#2563eb] text-[13px] md:text-[14px] font-medium leading-snug group-hover:underline">
+                                <a href={item.url} className="text-[#2563eb] text-[14px] font-medium leading-snug group-hover:underline">
                                   {item.text}
                                 </a>
                               </li>
@@ -378,16 +378,16 @@ function App() {
                       </div>
 
                       {/* LATEST JOBS BOX */}
-                      <div className="min-w-[280px] md:min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex flex-col h-[520px] snap-start">
+                      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex flex-col h-[520px]">
                         <div className="bg-[#b91c1c] p-3 text-center">
-                          <h3 className="text-white font-black text-sm md:text-base uppercase tracking-wider">LATEST JOBS</h3>
+                          <h3 className="text-white font-black text-base uppercase tracking-wider">LATEST JOBS</h3>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-4 md:p-5 scrollbar-hide">
+                        <div className="flex-1 overflow-y-auto p-5 scrollbar-hide">
                           <ul className="space-y-2">
                             {config.lists.latestJobs.map((item) => (
                               <li key={item.id} className="flex items-start gap-2.5 group">
                                 <span className="text-slate-900 mt-1 shrink-0 text-xs">•</span>
-                                <a href={item.url} className="text-[#2563eb] text-[13px] md:text-[14px] font-medium leading-snug group-hover:underline">
+                                <a href={item.url} className="text-[#2563eb] text-[14px] font-medium leading-snug group-hover:underline">
                                   {item.text}
                                 </a>
                               </li>
@@ -402,7 +402,7 @@ function App() {
 
                 {!hasSearched && (
                   <div className="mb-16">
-                    <div className="bg-[#f0f9ff] border border-blue-100 rounded-[2rem] p-8 md:p-12 text-center shadow-sm relative overflow-hidden group">
+                    <div className="bg-[#f0f9ff] border border-blue-100 rounded-[2rem] p-12 text-center shadow-sm relative overflow-hidden group">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-50 -mr-16 -mt-16"></div>
                       <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-50 -ml-16 -mb-16"></div>
                       
@@ -410,7 +410,7 @@ function App() {
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-blue-600 text-[10px] font-black uppercase tracking-widest mb-6 border border-blue-50">
                           <BellRing size={14} className="animate-bounce" /> {config.banner.badgeText}
                         </div>
-                        <h3 className="text-3xl md:text-5xl font-black text-slate-900 mb-6">
+                        <h3 className="text-5xl font-black text-slate-900 mb-6">
                           {config.banner.title} <span className="text-blue-600">{config.banner.highlight}</span>
                         </h3>
                         <p className="text-slate-500 text-lg max-w-xl mx-auto mb-10 font-medium">
@@ -434,8 +434,8 @@ function App() {
 
             {(hasSearched || viewSavedOnly) && (
               <div id="results-section" className="animate-in fade-in duration-500">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                  <h3 className="text-2xl md:text-3xl font-black text-slate-900 flex items-center gap-3">
+                <div className="flex items-center justify-between gap-6 mb-8">
+                  <h3 className="text-3xl font-black text-slate-900 flex items-center gap-3">
                     {viewSavedOnly ? (
                       <><div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center text-white"><Heart size={20} fill="white" /></div> {t.yourSaved}</>
                     ) : (
@@ -452,7 +452,7 @@ function App() {
                     </div>
                   )}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-6">
                   {displayedJobs.length > 0 ? (
                     displayedJobs.map(job => (
                       <JobCard key={job.id} job={job} userProfile={userProfile} onSetAlert={handleOpenAlerts} isBookmarked={savedJobIds.includes(job.id)} onToggleBookmark={toggleBookmark} text={t} isActive={selectedJobId === job.id} onViewDetails={() => handleViewJob(job.id)} />

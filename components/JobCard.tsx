@@ -105,15 +105,13 @@ const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookm
     }
   };
 
-  const daysLeft = Math.max(0, Math.ceil((new Date(job.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)));
   const compStyle = getCompetitionStyle(job.competition_level);
-
   const displayCategory = jobTag.toUpperCase() === 'OTHER' || jobTag.toUpperCase() === 'STATE GOVT' ? 'NATIONAL' : jobTag.toUpperCase();
 
   return (
     <div 
       onClick={onViewDetails}
-      className={`group relative flex flex-col bg-white rounded-[2.5rem] p-6 md:p-8 transition-all duration-500 border cursor-pointer
+      className={`group relative flex flex-col bg-white rounded-[2.5rem] p-8 transition-all duration-500 border cursor-pointer
         ${isActive 
           ? 'border-blue-500 shadow-[0_0_30px_-5px_rgba(59,130,246,0.5)] ring-2 ring-blue-500/10 scale-[1.02]' 
           : 'border-slate-200 shadow-sm hover:border-blue-400 hover:shadow-[0_0_25px_-5px_rgba(59,130,246,0.3)] hover:scale-[1.01]'
@@ -136,7 +134,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookm
       {/* Header Section */}
       <div className="flex justify-between items-start gap-4 mb-4">
         <div className="flex-1">
-          <h3 className={`text-xl md:text-2xl font-black leading-tight transition-colors group-hover:text-blue-600 ${isActive ? 'text-blue-600' : 'text-blue-900'}`}>
+          <h3 className={`text-2xl font-black leading-tight transition-colors group-hover:text-blue-600 ${isActive ? 'text-blue-600' : 'text-blue-900'}`}>
             {job.job_name}
           </h3>
           <div className="flex items-center gap-1.5 mt-2 text-slate-400">
@@ -189,25 +187,14 @@ const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookm
               <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[8px] font-black rounded uppercase">Relaxed</span>
             )}
           </div>
-          <p className="font-black text-slate-800 text-base md:text-lg">
+          <p className="font-black text-slate-800 text-lg">
             {job.min_age} - {relaxedMaxAge} <span className="text-xs text-slate-400">Yrs</span>
           </p>
-
-          {showAgeDetail && (
-            <div className="absolute bottom-full left-0 mb-4 w-60 p-5 bg-slate-900 text-white rounded-[1.5rem] text-[10px] leading-relaxed shadow-2xl z-50 border border-blue-500/30">
-              <div className="font-black mb-3 uppercase tracking-wider text-blue-400 border-b border-slate-700 pb-2">Age Details</div>
-              <div className="space-y-1">
-                <p>Standard Max: {job.max_age}</p>
-                <p className="text-emerald-400">Relaxation: +{relaxationBonus} Yrs</p>
-                <p className="pt-2 border-t border-slate-700 font-bold">Total Max: {relaxedMaxAge}</p>
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="p-4 rounded-2xl border border-blue-50 bg-[#f8faff]">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Qualification</p>
-          <p className="font-black text-slate-800 text-base md:text-lg">
+          <p className="font-black text-slate-800 text-lg">
             {job.qualification}
           </p>
         </div>
