@@ -111,64 +111,64 @@ const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookm
   return (
     <div 
       onClick={onViewDetails}
-      className={`group relative flex flex-col bg-white rounded-[2.5rem] p-8 transition-all duration-500 border cursor-pointer
+      className={`group relative flex flex-col bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 transition-all duration-500 border cursor-pointer
         ${isActive 
-          ? 'border-blue-500 shadow-[0_0_30px_-5px_rgba(59,130,246,0.5)] ring-2 ring-blue-500/10 scale-[1.02]' 
-          : 'border-slate-200 shadow-sm hover:border-blue-400 hover:shadow-[0_0_25px_-5px_rgba(59,130,246,0.3)] hover:scale-[1.01]'
+          ? 'border-blue-500 shadow-xl ring-2 ring-blue-500/10 scale-[1.01]' 
+          : 'border-slate-200 shadow-sm hover:border-blue-400 hover:shadow-lg hover:scale-[1.005]'
         }`}
     >
       {/* Top Category Badge */}
-      <div className="absolute top-0 left-10 -translate-y-1/2 z-10">
-        <div className={`flex items-center gap-2 px-6 py-1.5 rounded-full text-white shadow-lg border border-white text-[10px] font-black uppercase tracking-widest transition-colors ${isActive ? 'bg-blue-700' : 'bg-blue-600'}`}>
+      <div className="absolute top-0 left-6 md:left-10 -translate-y-1/2 z-10">
+        <div className={`flex items-center gap-1.5 md:gap-2 px-4 md:px-6 py-1 md:py-1.5 rounded-full text-white shadow-lg border border-white text-[8px] md:text-[10px] font-black uppercase tracking-widest transition-colors ${isActive ? 'bg-blue-700' : 'bg-blue-600'}`}>
           {getCategoryIcon(jobTag)}
           {displayCategory}
         </div>
       </div>
 
       {(shareToast || showSavedConfirm) && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full z-[100] shadow-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-wider bg-slate-900 text-white">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-2.5 rounded-full z-[100] shadow-xl flex items-center gap-2 font-black text-[9px] md:text-[10px] uppercase tracking-wider bg-slate-900 text-white">
           {showSavedConfirm ? <><CheckCircle2 size={12} className="text-emerald-400" /> Saved</> : 'Link Copied'}
         </div>
       )}
 
       {/* Header Section */}
-      <div className="flex justify-between items-start gap-4 mb-4">
+      <div className="flex justify-between items-start gap-4 mb-3 md:mb-4">
         <div className="flex-1">
-          <h3 className={`text-2xl font-black leading-tight transition-colors group-hover:text-blue-600 ${isActive ? 'text-blue-600' : 'text-blue-900'}`}>
+          <h3 className={`text-lg md:text-2xl font-black leading-tight transition-colors group-hover:text-blue-600 ${isActive ? 'text-blue-600' : 'text-blue-900'}`}>
             {job.job_name}
           </h3>
-          <div className="flex items-center gap-1.5 mt-2 text-slate-400">
-            <MapPin size={16} />
-            <span className="text-sm font-bold">{job.state}</span>
+          <div className="flex items-center gap-1.5 mt-1.5 text-slate-400">
+            <MapPin size={14} className="md:w-4 md:h-4" />
+            <span className="text-[10px] md:text-sm font-bold uppercase tracking-wide">{job.state}</span>
           </div>
         </div>
         
         <button 
           onClick={handleBookmarkClick}
-          className={`shrink-0 w-10 h-10 flex items-center justify-center transition-all rounded-full border shadow-sm active:scale-90 ${
+          className={`shrink-0 w-9 h-9 md:w-10 md:h-10 flex items-center justify-center transition-all rounded-full border shadow-sm active:scale-90 ${
             isBookmarked 
               ? 'bg-rose-50 border-rose-200 text-rose-500' 
               : 'bg-white border-slate-100 text-slate-200'
           }`}
         >
-          <Heart size={20} fill={isBookmarked ? "currentColor" : "none"} strokeWidth={2.5} />
+          <Heart size={18} fill={isBookmarked ? "currentColor" : "none"} strokeWidth={2.5} className="md:w-5 md:h-5" />
         </button>
       </div>
 
       {/* Status Tags */}
-      <div className="flex flex-wrap gap-3 mb-6">
-        <div className={`px-4 py-1 rounded-lg border text-[10px] font-black uppercase tracking-wider transition-colors ${compStyle.bg} ${compStyle.border} ${compStyle.text}`}>
+      <div className="flex flex-wrap gap-2 md:gap-3 mb-4 md:mb-6">
+        <div className={`px-3 md:px-4 py-1 rounded-lg border text-[8px] md:text-[10px] font-black uppercase tracking-wider transition-colors ${compStyle.bg} ${compStyle.border} ${compStyle.text}`}>
           ● {job.competition_level}
         </div>
-        <div className="px-4 py-1 rounded-lg border border-slate-100 bg-slate-50 text-slate-600 text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5">
+        <div className="px-3 md:px-4 py-1 rounded-lg border border-slate-100 bg-slate-50 text-slate-600 text-[8px] md:text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5">
           {job.salary_range}
         </div>
       </div>
 
       {/* Main Grid: Age and Qualification */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
         <div 
-          className={`relative p-4 rounded-2xl border transition-all cursor-pointer select-none ${
+          className={`relative p-3 md:p-4 rounded-xl md:rounded-2xl border transition-all cursor-pointer select-none ${
             eligibleViaRelaxation 
               ? 'bg-emerald-50/50 border-emerald-100' 
               : 'bg-[#f8faff] border-blue-50'
@@ -178,47 +178,47 @@ const JobCard: React.FC<JobCardProps> = ({ job, userProfile, onSetAlert, isBookm
             setShowAgeDetail(!showAgeDetail);
           }}
         >
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <div className="flex items-center gap-1">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Age Limit</p>
+              <p className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">Age Limit</p>
               <Info size={10} className={`transition-colors ${showAgeDetail ? 'text-blue-500' : 'text-slate-300'}`} />
             </div>
             {eligibleViaRelaxation && (
-              <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[8px] font-black rounded uppercase">Relaxed</span>
+              <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[7px] md:text-[8px] font-black rounded uppercase">Relaxed</span>
             )}
           </div>
-          <p className="font-black text-slate-800 text-lg">
-            {job.min_age} - {relaxedMaxAge} <span className="text-xs text-slate-400">Yrs</span>
+          <p className="font-black text-slate-800 text-base md:text-lg">
+            {job.min_age} - {relaxedMaxAge} <span className="text-[10px] md:text-xs text-slate-400 uppercase">Yrs</span>
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl border border-blue-50 bg-[#f8faff]">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Qualification</p>
-          <p className="font-black text-slate-800 text-lg">
+        <div className="p-3 md:p-4 rounded-xl md:rounded-2xl border border-blue-50 bg-[#f8faff]">
+          <p className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Qualification</p>
+          <p className="font-black text-slate-800 text-base md:text-lg truncate">
             {job.qualification}
           </p>
         </div>
       </div>
 
       {/* Action Section */}
-      <div className="mt-auto flex gap-3 pt-4 border-t border-slate-50">
+      <div className="mt-auto flex gap-2 md:gap-3 pt-4 border-t border-slate-50">
         <button 
           onClick={(e) => { e.stopPropagation(); onSetAlert(job); }}
-          className="w-12 h-12 shrink-0 bg-white border border-slate-100 text-slate-400 rounded-xl flex items-center justify-center hover:text-blue-600 hover:border-blue-100 transition-all"
+          className="w-10 h-10 md:w-12 md:h-12 shrink-0 bg-white border border-slate-100 text-slate-400 rounded-lg md:rounded-xl flex items-center justify-center hover:text-blue-600 hover:border-blue-100 transition-all"
         >
-          <Bell size={20} />
+          <Bell size={18} className="md:w-5 md:h-5" />
         </button>
         <button 
           onClick={handleShare}
-          className="w-12 h-12 shrink-0 bg-white border border-slate-100 text-slate-400 rounded-xl flex items-center justify-center hover:text-blue-600 hover:border-blue-100 transition-all"
+          className="w-10 h-10 md:w-12 md:h-12 shrink-0 bg-white border border-slate-100 text-slate-400 rounded-lg md:rounded-xl flex items-center justify-center hover:text-blue-600 hover:border-blue-100 transition-all"
         >
-          <Share2 size={20} />
+          <Share2 size={18} className="md:w-5 md:h-5" />
         </button>
         <button 
           onClick={(e) => { e.stopPropagation(); onViewDetails(); }}
-          className="flex-1 bg-slate-900 text-white font-black rounded-xl flex items-center justify-center gap-2 text-xs uppercase tracking-widest hover:bg-blue-600 transition-all"
+          className="flex-1 bg-slate-900 text-white font-black rounded-lg md:rounded-xl flex items-center justify-center gap-2 text-[10px] md:text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-md"
         >
-          <Eye size={16} /> View Details
+          <Eye size={14} className="md:w-4 md:h-4" /> View Details
         </button>
       </div>
     </div>
